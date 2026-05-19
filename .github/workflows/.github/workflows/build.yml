@@ -1,0 +1,21 @@
+on: [push]
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Publish
+        run: dotnet publish csharp/Calculator.csproj -c Release -r win-x64 --self-contained true
+      - name: Install Inno Setup
+        run: choco install innosetup
+      - name: Build Installer
+        run: iscc csharp/setup.iss
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Calculadora-Setup
+          path: csharp/dist/setup_calculadora.exe
